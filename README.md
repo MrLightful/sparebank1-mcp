@@ -9,8 +9,6 @@ Requires **Node.js 22+**, a SpareBank 1 customer account, and a [personal API cl
 
 ## Setup
 
-The first npm release is pending. These commands target `0.0.1`; use [Development](#development) to run from source until it is published.
-
 Register your API client with the exact redirect URI below, then set credentials in your local terminal and log in:
 
 ```sh
