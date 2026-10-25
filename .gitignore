@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.context/
+.env
+.env.*
+!.env.example
+*tokens*.json
+*.log
+.DS_Store

@@ -1,0 +1,6 @@
+node_modules/
+dist/
+coverage/
+.context/
+package-lock.json
+docs/openapi/

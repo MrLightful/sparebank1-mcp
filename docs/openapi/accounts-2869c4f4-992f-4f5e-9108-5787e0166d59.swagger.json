@@ -1,0 +1,179 @@
+{
+  "paths": {
+    "/accounts/keys": {
+      "get": {
+        "tags": [
+          "/accounts"
+        ],
+        "summary": "Retrieve account keys for account numbers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.sparebank1.v1+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountKeysDTO"
+                }
+              },
+              "application/vnd.sparebank1.v4+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountKeysDTO"
+                }
+              },
+              "application/vnd.sparebank1.v5+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountKeysDTO"
+                }
+              }
+            },
+            "description": "Successfully retrieved account keys for account numbers"
+          },
+          "400": {
+            "content": {
+              "application/vnd.sparebank1.v1+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorsDTO"
+                }
+              },
+              "application/vnd.sparebank1.v4+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorsDTO"
+                }
+              },
+              "application/vnd.sparebank1.v5+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorsDTO"
+                }
+              }
+            },
+            "description": "The accountNumber is invalid, expected valid account number"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "accountNumber",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": "accountNumber=12069209406&accountNumber=3480118760",
+            "required": true,
+            "description": "List of account numbers"
+          }
+        ],
+        "operationId": "getAccountKeys"
+      }
+    }
+  },
+  "openapi": "3.0.1",
+  "components": {
+    "schemas": {
+      "ErrorDTO": {
+        "type": "object",
+        "required": [
+          "code",
+          "httpCode",
+          "message",
+          "traceId"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "invalid_start_date",
+            "description": "A code representing the error that occurred. Can be an application error code if the error might be handled programmatically by the client, or if it shall be possible for the client to show an internationalized message. For I18N messages the code will act as a resource key for the message template in the client. For general errors without an application error code, the code will be a textual representation of the HTTP status code associated with the error. Note: The error code in the example is a general example, and might not be relevant for this API."
+          },
+          "message": {
+            "type": "string",
+            "example": "The start date must be after 1970-01-01, and before 2030-12-12. The date should be expressed according to ISO 8601.",
+            "description": "An english error message that describes the error that occurred."
+          },
+          "traceId": {
+            "type": "string",
+            "description": "Unique trace id that can be used to correlate the error reported with log entries in SB1"
+          },
+          "httpCode": {
+            "type": "integer",
+            "format": "int32",
+            "example": 403,
+            "description": "HTTP status code that describes the error. Can be different from the HTTP status code received by the HTTP client in case a proxy has changed it, or if there are multiple ErrorDTO objects in the HTTP response."
+          },
+          "resource": {
+            "type": "string",
+            "example": "startDate",
+            "description": "If the error is associated with input data, the resource can be set with the property path of the property that contains invalid data"
+          },
+          "localizedMessage": {
+            "$ref": "#/components/schemas/LocalizedMessage"
+          }
+        },
+        "description": "List of errors. Note: The error in the provided example is a general example, and might not be relevant for this API."
+      },
+      "ErrorsDTO": {
+        "type": "object",
+        "required": [
+          "errors"
+        ],
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDTO"
+            },
+            "description": "List of errors. Note: The error in the provided example is a general example, and might not be relevant for this API."
+          }
+        }
+      },
+      "AccountKeysDTO": {
+        "type": "object",
+        "required": [
+          "accountKeysMap"
+        ],
+        "properties": {
+          "accountKeysMap": {
+            "type": "object",
+            "example": {
+              "12069209406": "t9WDAIBddTG13XyXGYaa",
+              "34801187600": "qyCfJ-70SPPXsR85scPW"
+            },
+            "description": "Map of account numbers and corresponding account keys",
+            "additionalProperties": {
+              "type": "string",
+              "example": "{\"12069209406\":\"t9WDAIBddTG13XyXGYaa\",\"34801187600\":\"qyCfJ-70SPPXsR85scPW\"}",
+              "description": "Map of account numbers and corresponding account keys"
+            }
+          }
+        }
+      },
+      "LocalizedMessage": {
+        "type": "object",
+        "required": [
+          "template",
+          "values"
+        ],
+        "properties": {
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "[\"1970-01-01\",\"2030-12-12\"]",
+              "description": "Values that can be inserted in a localized error message."
+            },
+            "example": [
+              "1970-01-01",
+              "2030-12-12"
+            ],
+            "description": "Values that can be inserted in a localized error message."
+          },
+          "template": {
+            "type": "string",
+            "example": "The start date must be after {0}, and before {1}. The date should be expressed according to ISO 8601.",
+            "description": "An english message that indicates how the provided values can be used in a localized error message."
+          }
+        },
+        "description": "Field that can be used in order to build locale specific error messages in the client. code should be used as the key for a I18N message text in the client. localizedMessage is an object containing a template and an array of values can be inserted in the message. The template in localizedMessage is only present in order to indicate the meaning of the elements in the values-array."
+      }
+    }
+  }
+}

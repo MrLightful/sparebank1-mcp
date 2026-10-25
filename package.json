@@ -1,0 +1,61 @@
+{
+  "name": "sparebank1-mcp",
+  "version": "0.0.1",
+  "description": "Local MCP server for SpareBank 1 personal banking: accounts, transactions and guarded own-account transfers.",
+  "type": "module",
+  "bin": {
+    "sparebank1-mcp": "dist/index.js"
+  },
+  "exports": {
+    ".": "./dist/server.js"
+  },
+  "files": [
+    "dist",
+    ".env.example",
+    "README.md",
+    "LICENSE",
+    "docs"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "check": "npm run format:check && npm run typecheck && npm test && npm run build",
+    "prepack": "npm run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "^2.4.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "^2.4.0",
+    "@types/node": "^22.19.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.3",
+    "vitest": "^4.1.12"
+  },
+  "author": {
+    "name": "Roman Sirokov",
+    "email": "roman@mrlightful.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrLightful/sparebank1-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "sparebank1",
+    "norway",
+    "banking",
+    "model-context-protocol"
+  ]
+}

@@ -1,0 +1,631 @@
+{
+  "paths": {
+    "/accounts/{accountKey}": {
+      "get": {
+        "tags": [
+          "/accounts"
+        ],
+        "summary": "Get account",
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.sparebank1.v1+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDTO"
+                }
+              },
+              "application/vnd.sparebank1.v4+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDTO"
+                }
+              },
+              "application/vnd.sparebank1.v5+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDTO"
+                }
+              }
+            },
+            "description": "Successfully retrieved account"
+          },
+          "404": {
+            "content": {
+              "application/vnd.sparebank1.v1+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorsDTO"
+                }
+              },
+              "application/vnd.sparebank1.v4+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorsDTO"
+                }
+              },
+              "application/vnd.sparebank1.v5+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorsDTO"
+                }
+              }
+            },
+            "description": "Not found when the account key is not matched, or does not belong to the caller"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "accountKey",
+            "schema": {
+              "type": "string"
+            },
+            "example": "QeDJBRXWQaY8BkaSjgXT",
+            "required": true,
+            "description": "The key of the account to retrieve"
+          }
+        ],
+        "description": "Gets a single deposit account. Credit card and pension keys from the account list are not supported.",
+        "operationId": "getAccount"
+      }
+    },
+    "/accounts/{accountKey}/details": {
+      "get": {
+        "tags": [
+          "/accounts"
+        ],
+        "summary": "Get additional account details",
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.sparebank1.v1+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDetailsDTO"
+                }
+              },
+              "application/vnd.sparebank1.v4+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDetailsDTO"
+                }
+              },
+              "application/vnd.sparebank1.v5+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDetailsDTO"
+                }
+              }
+            },
+            "description": "Successfully retrieved account details"
+          },
+          "404": {
+            "description": "Not found when the account key is not matched, or does not belong to the caller"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "accountKey",
+            "schema": {
+              "type": "string"
+            },
+            "example": "QeDJBRXWQaY8BkaSjgXT",
+            "required": true,
+            "description": "The key of the account to retrieve details for"
+          }
+        ],
+        "description": "Gets withdrawal, interest, credit and sharing details for a deposit account. For currency accounts only freeWithdrawalsLeft, blockedBsuAmount, bankIdentifierCode and canBeShared are present.",
+        "operationId": "getAccountDetails"
+      }
+    }
+  },
+  "openapi": "3.0.1",
+  "components": {
+    "schemas": {
+      "ErrorDTO": {
+        "type": "object",
+        "required": [
+          "code",
+          "httpCode",
+          "message",
+          "traceId"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "invalid_start_date",
+            "description": "A code representing the error that occurred. Can be an application error code if the error might be handled programmatically by the client, or if it shall be possible for the client to show an internationalized message. For I18N messages the code will act as a resource key for the message template in the client. For general errors without an application error code, the code will be a textual representation of the HTTP status code associated with the error. Note: The error code in the example is a general example, and might not be relevant for this API."
+          },
+          "message": {
+            "type": "string",
+            "example": "The start date must be after 1970-01-01, and before 2030-12-12. The date should be expressed according to ISO 8601.",
+            "description": "An english error message that describes the error that occurred."
+          },
+          "traceId": {
+            "type": "string",
+            "description": "Unique trace id that can be used to correlate the error reported with log entries in SB1"
+          },
+          "httpCode": {
+            "type": "integer",
+            "format": "int32",
+            "example": 403,
+            "description": "HTTP status code that describes the error. Can be different from the HTTP status code received by the HTTP client in case a proxy has changed it, or if there are multiple ErrorDTO objects in the HTTP response."
+          },
+          "resource": {
+            "type": "string",
+            "example": "startDate",
+            "description": "If the error is associated with input data, the resource can be set with the property path of the property that contains invalid data"
+          },
+          "localizedMessage": {
+            "$ref": "#/components/schemas/LocalizedMessage"
+          }
+        },
+        "description": "List of errors. Note: The error in the provided example is a general example, and might not be relevant for this API."
+      },
+      "ErrorsDTO": {
+        "type": "object",
+        "required": [
+          "errors"
+        ],
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDTO"
+            },
+            "description": "List of errors. Note: The error in the provided example is a general example, and might not be relevant for this API."
+          }
+        }
+      },
+      "AccountDTO": {
+        "type": "object",
+        "required": [
+          "accountNumber",
+          "accountProperties",
+          "availableBalance",
+          "balance",
+          "currencyCode",
+          "iban",
+          "key",
+          "name",
+          "productType",
+          "type"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "example": "QeDJBRXWQaY8BkaSjgXT",
+            "description": "The key of the account. Used for further requests towards the account API. For credit cards this is the card id, and for pension agreements the policy number. These keys cannot be used with the other /accounts endpoints."
+          },
+          "iban": {
+            "type": "string",
+            "example": "NO4532091055340",
+            "description": "Account IBAN. Empty string for credit card and pension accounts."
+          },
+          "name": {
+            "type": "string",
+            "example": "My account",
+            "description": "The name of the account. Uses the users preferred name if it exists, falls back to system name if not. For credit cards this is the masked card number, and for pension agreements the agreement name."
+          },
+          "type": {
+            "enum": [
+              "BSU",
+              "ELS",
+              "IFRS",
+              "PENSION",
+              "SAVEAGREE",
+              "SAVING",
+              "STOCKSAVING",
+              "TAXWITHDRAW",
+              "UNKNOWN",
+              "USER",
+              "YEARINTBONUS",
+              "CREDITCARD"
+            ],
+            "type": "string",
+            "example": "USER",
+            "description": "The account type. Possible values:\n        - USER: Local currency deposit user account, including flexi loan accounts (see isFlexiLoan)\n        - SAVING: Local currency deposit saving account\n        - BSU: Local currency deposit BSU account\n        - ELS: Currency deposit loan account\n        - IFRS: Local currency IFRS account\n        - PENSION: Pension account\n        - SAVEAGREE: Local currency savings agreement account\n        - STOCKSAVING: Share savings account (aksjesparekonto)\n        - TAXWITHDRAW: Local currency tax withdrawal account\n        - YEARINTBONUS: Local currency deposit yearly interest bonus account\n        - CREDITCARD: Credit card\n        - UNKNOWN: Unknown host value\n    "
+          },
+          "owner": {
+            "$ref": "#/components/schemas/CustomerDTO"
+          },
+          "balance": {
+            "type": "number",
+            "example": 123.45,
+            "description": "The booked balance of the account, in the monetary unit represented by the currency code. The format is the monetary unit followed by . and two digits of cent. The value of cent in this context is one hundredth of the monetary unit. 12.67 in NOK would equal 12 kroners and 67 ore. For pension accounts this is the market value of the agreement."
+          },
+          "obsCodes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "deprecated": true,
+              "description": "DEPRECATED - ALWAYS NULL - List of OBS codes for the account"
+            },
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS NULL - List of OBS codes for the account"
+          },
+          "productId": {
+            "type": "string",
+            "example": "60040600",
+            "description": "The product id. Not present for credit card and pension accounts."
+          },
+          "description": {
+            "type": "string",
+            "example": "BRUKSKONTO",
+            "description": "A description of the account. For credit cards this is the card product name. Not present for pension accounts."
+          },
+          "productType": {
+            "enum": [
+              "LOCDEPOSIT",
+              "CURDEPOSIT",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "example": "LOCDEPOSIT",
+            "description": "The product code for the account. Possible values:\n        - LOCDEPOSIT: Local currency deposit.\n        - CURDEPOSIT: Currency deposit.\n        - UNKNOWN: Unknown host value, and for credit card and pension accounts.\n    "
+          },
+          "currencyCode": {
+            "type": "string",
+            "example": "NOK",
+            "description": "The three letter currency code"
+          },
+          "accountNumber": {
+            "type": "string",
+            "example": "11111111111",
+            "description": "The unformatted account number, 11 digits for deposit accounts. For credit cards this is the card account number (prefixed with K), and for pension agreements the policy number prefixed with P."
+          },
+          "descriptionCode": {
+            "type": "string",
+            "example": "L",
+            "description": "The description code for the account type"
+          },
+          "availableBalance": {
+            "type": "number",
+            "example": 123.45,
+            "description": "The available balance of the account, in the monetary unit represented by the currency code. The format is the monetary unit followed by . and two digits of cent. The value of cent in this context is one hundredth of the monetary unit. 12.67 in NOK would equal 12 kroners and 67 ore. For credit cards this equals balance, and for pension accounts it is always 0.00."
+          },
+          "accountProperties": {
+            "$ref": "#/components/schemas/AccountPropertiesDTO"
+          },
+          "creditCardAccountID": {
+            "type": "string",
+            "example": "103414520",
+            "description": "ID of the account (AccountId from the backend system KKINT). Present for all credit card accounts. Not present for any other accounts."
+          },
+          "creditCardCreditLimit": {
+            "type": "number",
+            "example": 123.45,
+            "description": "The granted credit limit of the card. Present for all credit card accounts. Not present for any other accounts. In the monetary unit represented by the currency code. The format is the monetary unit followed by . and two digits of cent. The value of cent in this context is one hundredth of the monetary unit. 12.67 in NOK would equal 12 kroners and 67 ore"
+          }
+        }
+      },
+      "CustomerDTO": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "age": {
+            "type": "integer",
+            "format": "int32",
+            "example": 28,
+            "description": "The customer's age. Only present when the owner is identified by a national identity number"
+          },
+          "name": {
+            "type": "string",
+            "example": "Kari Nordmann",
+            "description": "The customer's full name, i.e. first name and last name separated by a space"
+          },
+          "type": {
+            "enum": [
+              "personal",
+              "self_employed",
+              "corporate"
+            ],
+            "type": "string",
+            "example": "personal",
+            "description": "The type of customer"
+          },
+          "ssnKey": {
+            "type": "string",
+            "example": "gEKOMXLWjmsRvoc1_cmGyRzTBJUM1Pj1N1rxBVxgTTExS3EfJSbyZ1v3Dm8D5OM2vONpyAHjkgBLO9LdGVlvxm1",
+            "description": "The customer's social security number encrypted. A different value will be generated for each call. Only present when the owner is identified by a national identity number"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Nordmann",
+            "description": "The customer's last name. For corporate customers this is the company name"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Kari",
+            "description": "The customer's first name"
+          },
+          "customerKey": {
+            "type": "string",
+            "example": "7W0xVI9k",
+            "description": "The customer's key. Only present when the owner is identified by a national identity number"
+          },
+          "organisationNumber": {
+            "type": "string",
+            "example": "123456789",
+            "description": "The customer's 9 digit organisation number. Only present when the owner is identified by an organisation number"
+          }
+        },
+        "description": "The owner of the account. Not present for credit card and pension accounts."
+      },
+      "LocalizedMessage": {
+        "type": "object",
+        "required": [
+          "template",
+          "values"
+        ],
+        "properties": {
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "[\"1970-01-01\",\"2030-12-12\"]",
+              "description": "Values that can be inserted in a localized error message."
+            },
+            "example": [
+              "1970-01-01",
+              "2030-12-12"
+            ],
+            "description": "Values that can be inserted in a localized error message."
+          },
+          "template": {
+            "type": "string",
+            "example": "The start date must be after {0}, and before {1}. The date should be expressed according to ISO 8601.",
+            "description": "An english message that indicates how the provided values can be used in a localized error message."
+          }
+        },
+        "description": "Field that can be used in order to build locale specific error messages in the client. code should be used as the key for a I18N message text in the client. localizedMessage is an object containing a template and an array of values can be inserted in the message. The template in localizedMessage is only present in order to indicate the meaning of the elements in the values-array."
+      },
+      "AccountDetailsDTO": {
+        "type": "object",
+        "required": [
+          "bankIdentifierCode",
+          "blockedBsuAmount",
+          "canBeShared",
+          "freeWithdrawalsLeft"
+        ],
+        "properties": {
+          "creditLine": {
+            "type": "number",
+            "example": -5000.0,
+            "description": "The granted credit line of the account, expressed as a negative amount (or 0 when the account has no credit line). Not present for currency accounts"
+          },
+          "canBeShared": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether a disposal role may be granted on this account, i.e. it can be shared with another customer. Always false when the logged in user is a minor, and for currency accounts"
+          },
+          "interestRate": {
+            "type": "number",
+            "example": 3.25,
+            "description": "The interest rate for the account, in percent. For accounts with balance-tiered rates this is the first reported rate; see interestRatePriceList for all tiers. Not present for currency accounts"
+          },
+          "blockedAmount": {
+            "type": "number",
+            "example": 1000.23,
+            "description": "An amount that cannot be withdrawn. Not present for currency accounts"
+          },
+          "blockedBsuAmount": {
+            "type": "number",
+            "example": 0,
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS 0 - The amount set off for BSU that cannot be withdrawn"
+          },
+          "bankIdentifierCode": {
+            "type": "string",
+            "example": "SHEDNO22",
+            "description": "The bank's international code or address. Used in combination with IBAN to identify an account in context of international payments"
+          },
+          "lastWithdrawalDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2020-12-31",
+            "description": "The last day of the current withdrawal period, i.e. the date freeWithdrawalsLeft resets. Not present for accounts without a limit on free withdrawals, or for currency accounts"
+          },
+          "freeWithdrawalsLeft": {
+            "type": "integer",
+            "format": "int32",
+            "example": 12,
+            "description": "The number of free withdrawals remaining in the current withdrawal period (ending on\n                lastWithdrawalDate) before a fee is charged.\n                Warning: This value is only updated once a day.\n                A value of -1 means the account has no limit for the number of free withdrawals.\n                Always -1 for currency accounts"
+          },
+          "totalConfirmedAmount": {
+            "type": "number",
+            "example": 1000.5,
+            "description": "The total reserved amount, i.e. transactions that are approved but not yet booked. Not present for currency accounts"
+          },
+          "interestRatePriceList": {
+            "$ref": "#/components/schemas/InterestRatePriceListDTO"
+          },
+          "netCalculatedCreditInterest": {
+            "type": "number",
+            "example": 110.5,
+            "description": "The credit interest earned so far that has not yet been added to the account (capitalized). Not present for currency accounts"
+          },
+          "totalCreditInterestLastYear": {
+            "type": "number",
+            "example": 123.45,
+            "description": "The credit interest that was added to the account (capitalized) last year. 0 when there is none. Not present for currency accounts"
+          },
+          "netCalculatedCreditLineInterest": {
+            "type": "number",
+            "example": 115.0,
+            "description": "The interest expense on the credit line accrued so far that has not yet been charged (capitalized). 0 when there is none. Not present for currency accounts"
+          }
+        }
+      },
+      "InterestIntervalDTO": {
+        "type": "object",
+        "required": [
+          "fromValue",
+          "interestRate",
+          "interestThreshold"
+        ],
+        "properties": {
+          "toValue": {
+            "type": "number",
+            "example": 50000,
+            "description": "The upper bound of the balance interval, exclusive. Not present for the open-ended top interval"
+          },
+          "fromValue": {
+            "type": "number",
+            "example": 0,
+            "description": "The lower bound of the balance interval, inclusive"
+          },
+          "interestRate": {
+            "type": "number",
+            "example": 0.5,
+            "description": "The interest rate that applies within this interval"
+          },
+          "interestThreshold": {
+            "enum": [
+              "BALANCE",
+              "INTERVAL",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "description": "How the interest rate for this interval is determined. Possible values:\n        - BALANCE: The rate applies because the account's balance falls within this tier of threshold amounts.\n        - INTERVAL: The rate is reported per a rate-table interval rather than a balance threshold,\n          notably when a tier's rate is lower than the preceding tier's (a \"negative threshold\" rate).\n        - UNKNOWN: The backend did not report a recognized interest threshold type.\n    "
+          }
+        },
+        "description": "The balance-tiered interest rate intervals for the account"
+      },
+      "AccountPropertiesDTO": {
+        "type": "object",
+        "required": [
+          "hasAccess",
+          "isAksjesparekonto",
+          "isAllowedInAvtaleGiro",
+          "isBalancePreferred",
+          "isBalanceUpdatedImmediatelyOnTransferTo",
+          "isBlocked",
+          "isBonusAccount",
+          "isCodebitorLoan",
+          "isDefaultPaymentAccount",
+          "isFlexiLoan",
+          "isHidden",
+          "isOwned",
+          "isPaymentFromEnabled",
+          "isSavingsAccount",
+          "isSecurityBalance",
+          "isTransferFromEnabled",
+          "isTransferToEnabled",
+          "isWithdrawalsAllowed",
+          "userHasRightOfAccess",
+          "userHasRightOfDisposal"
+        ],
+        "properties": {
+          "isOwned": {
+            "type": "boolean",
+            "description": "The user owns the account. At most one of isOwned, userHasRightOfDisposal and userHasRightOfAccess is true"
+          },
+          "isHidden": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS FALSE - The account should be hidden in user interfaces"
+          },
+          "hasAccess": {
+            "type": "boolean",
+            "description": "The user has access to the account. Always true, except for pension accounts"
+          },
+          "isBlocked": {
+            "type": "boolean",
+            "description": "Access to the account has been blocked"
+          },
+          "isFlexiLoan": {
+            "type": "boolean",
+            "description": "The account is a flexiloan account"
+          },
+          "isBonusAccount": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS FALSE - The account is a bonus account"
+          },
+          "isCodebitorLoan": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS FALSE - The account is a codebitor loan"
+          },
+          "isSavingsAccount": {
+            "type": "boolean",
+            "description": "The account is a savings account"
+          },
+          "isAksjesparekonto": {
+            "type": "boolean",
+            "description": "The account is a share savings account"
+          },
+          "isSecurityBalance": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS FALSE - The account is a security balance"
+          },
+          "isBalancePreferred": {
+            "type": "boolean",
+            "description": "Balance is preferred to availableBalance"
+          },
+          "isTransferToEnabled": {
+            "type": "boolean",
+            "description": "Transfers to the account is enabled"
+          },
+          "isPaymentFromEnabled": {
+            "type": "boolean",
+            "description": "Payments from the account is enabled"
+          },
+          "isWithdrawalsAllowed": {
+            "type": "boolean",
+            "description": "Withdrawals from the account are allowed. Always true, except for pension accounts"
+          },
+          "userHasRightOfAccess": {
+            "type": "boolean",
+            "description": "The user has right of access (read only) to the account, without owning it or having right of disposal. At most one of isOwned, userHasRightOfDisposal and userHasRightOfAccess is true"
+          },
+          "isAllowedInAvtaleGiro": {
+            "type": "boolean",
+            "description": "Is allowed as debit account in AvtaleGiro agreements"
+          },
+          "isTransferFromEnabled": {
+            "type": "boolean",
+            "description": "Transfers from the account is enabled"
+          },
+          "userHasRightOfDisposal": {
+            "type": "boolean",
+            "description": "The user has right of disposal for the account, without owning it. At most one of isOwned, userHasRightOfDisposal and userHasRightOfAccess is true"
+          },
+          "isDefaultPaymentAccount": {
+            "type": "boolean",
+            "description": "The account is the users preferred default payment account"
+          },
+          "isBalanceUpdatedImmediatelyOnTransferTo": {
+            "type": "boolean",
+            "description": "If true, the account balance is updated immediately when transferring money to the account. If false, the balance will normally be updated within a few hours or days depending on the account type"
+          }
+        },
+        "description": "The properties of the account"
+      },
+      "InterestRatePriceListDTO": {
+        "type": "object",
+        "required": [
+          "currency",
+          "interestIntervals"
+        ],
+        "properties": {
+          "currency": {
+            "type": "string",
+            "example": "NOK",
+            "description": "The three letter currency code"
+          },
+          "interestIntervals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InterestIntervalDTO"
+            },
+            "description": "The balance-tiered interest rate intervals for the account"
+          },
+          "overdraftInterestRate": {
+            "type": "number",
+            "example": 10.0,
+            "description": "The interest rate applied to a negative (overdrawn) balance"
+          }
+        },
+        "description": "Interest rates interval price list. Not present for currency accounts"
+      }
+    }
+  }
+}

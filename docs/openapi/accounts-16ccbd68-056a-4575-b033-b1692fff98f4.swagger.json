@@ -1,0 +1,324 @@
+{
+  "paths": {
+    "/accounts/child/{id}": {
+      "get": {
+        "tags": [
+          "/accounts"
+        ],
+        "summary": "List accounts belonging to a child",
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.sparebank1.v5+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChildAccountResponseDTO"
+                }
+              }
+            },
+            "description": "Successfully retrieved the child's accounts"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The child's id"
+          }
+        ],
+        "operationId": "getChildAccounts"
+      }
+    }
+  },
+  "openapi": "3.0.1",
+  "components": {
+    "schemas": {
+      "ChildAccountDTO": {
+        "type": "object",
+        "required": [
+          "accountNumber",
+          "accountProperties",
+          "availableBalance",
+          "balance",
+          "currencyCode",
+          "key",
+          "productType",
+          "type"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "example": "QeDJBRXWQaY8BkaSjgXT",
+            "description": "The key of the account. Used for further requests towards the account API"
+          },
+          "iban": {
+            "type": "string",
+            "example": "NO4532091055340",
+            "description": "Account IBAN"
+          },
+          "name": {
+            "type": "string",
+            "example": "My account",
+            "description": "The default name set by the system"
+          },
+          "type": {
+            "enum": [
+              "ANNLOAN",
+              "BSU",
+              "CONTRACTGUAR",
+              "ELS",
+              "FIANNLOAN",
+              "FISERLOAN",
+              "IFRS",
+              "LOANGUAR",
+              "LTO",
+              "OTHERGUAR",
+              "PAYGUAR",
+              "PENSION",
+              "SAVEAGREE",
+              "SAVING",
+              "SECGUAR",
+              "SERLOAN",
+              "STOCKSAVING",
+              "TAXGUAR",
+              "TAXWITHDRAW",
+              "UNKNOWN",
+              "USER",
+              "YEARINTBONUS",
+              "CREDITCARD"
+            ],
+            "type": "string",
+            "example": "USER",
+            "description": "The account type. Possible values:\n        - USER: Local currency deposit user account\n        - SAVING: Local currency deposit saving account\n        - ANNLOAN: Annuity loan\n        - BSU: Local currency deposit BSU account\n        - CONTRACTGUAR: Contract guarantee\n        - ELS: Currency deposit loan account\n        - FIANNLOAN: Fixed interest annuity loan\n        - FISERLOAN: Fixed interest serial loan\n        - IFRS: Local currency IFRS account\n        - LOANGUAR: Loan guarantee\n        - LTO: Loan under long term surveillance\n        - OTHERGUAR: Other guarantee\n        - PAYGUAR: Payment guarantee\n        - PENSION: Pension account\n        - SAVEAGREE: Local currency savings agreement account\n        - SECGUAR: Security guarantee\n        - SERLOAN: Serial loan\n        - STOCKSAVING: Local currency savings agreement account\n        - TAXGUAR: Tax guarantee\n        - TAXWITHDRAW: Local currency tax withdrawal account\n        - YEARINTBONUS: Local currency deposit yearly interest bonus account\n        - CREDITCARD: Credit card\n        - UNKNOWN: Unknown host value\n    "
+          },
+          "owner": {
+            "$ref": "#/components/schemas/ChildAccountOwnerDTO"
+          },
+          "balance": {
+            "type": "number",
+            "example": 123.45,
+            "description": "The booked balance of the account, in the monetary unit represented by the currency code. The format is the monetary unit followed by . and two digits of cent. The value of cent in this context is one hundredth of the monetary unit. 12.67 in NOK would equal 12 kroners and 67 ore"
+          },
+          "productId": {
+            "type": "string",
+            "example": "60040600",
+            "description": "The product id"
+          },
+          "description": {
+            "type": "string",
+            "example": "BRUKSKONTO",
+            "description": "A description of the account"
+          },
+          "productType": {
+            "enum": [
+              "LOCDEPOSIT",
+              "CURDEPOSIT",
+              "LOCLOAN",
+              "GUARANTEE",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "example": "LOCDEPOSIT",
+            "description": "The product code for the account. Possible values:\n        - LOCDEPOSIT: Local currency deposit.\n        - CURDEPOSIT: Currency deposit.\n        - LOCLOAN: Local currency loan.\n        - GUARANTEE: Guarantee.\n        - UNKNOWN: Unknown host value.\n    "
+          },
+          "currencyCode": {
+            "type": "string",
+            "example": "NOK",
+            "description": "The three letter currency code"
+          },
+          "accountNumber": {
+            "type": "string",
+            "example": "11111111111",
+            "description": "The none-formatted account number. 11 digits"
+          },
+          "descriptionCode": {
+            "type": "string",
+            "example": "L",
+            "description": "The description code for the account type"
+          },
+          "availableBalance": {
+            "type": "number",
+            "example": 123.45,
+            "description": "The available balance of the account, in the monetary unit represented by the currency code. The format is the monetary unit followed by . and two digits of cent. The value of cent in this context is one hundredth of the monetary unit. 12.67 in NOK would equal 12 kroners and 67 ore"
+          },
+          "accountProperties": {
+            "$ref": "#/components/schemas/ChildAccountPropertiesDTO"
+          }
+        },
+        "description": "The child's accounts"
+      },
+      "ChildAccountOwnerDTO": {
+        "type": "object",
+        "properties": {
+          "age": {
+            "type": "number",
+            "example": 12,
+            "description": "The customer's age"
+          },
+          "name": {
+            "type": "string",
+            "example": "Kari Nordmann",
+            "description": "The customer's full name"
+          },
+          "type": {
+            "type": "string",
+            "example": "personal",
+            "description": "If the customer is an organisation or personal customer"
+          },
+          "ssnKey": {
+            "type": "string",
+            "example": "gEKOMXLWjmsRvoc1_cmGyRzTBJUM1Pj1N1rxBVxgTTExS3EfJSbyZ1v3Dm8D5OM2vONpyAHjkgBLO9LdGVlvxm1",
+            "description": "The customer's social security number encrypted. A different value will be generated for each call."
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Nordmann",
+            "description": "The customer's last name"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Kari",
+            "description": "The customer's first name"
+          },
+          "customerKey": {
+            "type": "string",
+            "example": "7W0xVI9k",
+            "description": "The customer's key"
+          },
+          "organisationNumber": {
+            "type": "string",
+            "example": "123456789",
+            "description": "The customer's org number, might be 9 digits or 11 digits if it's left padded with two zeroes"
+          }
+        },
+        "description": "The owner of the account"
+      },
+      "ChildAccountResponseDTO": {
+        "type": "object",
+        "required": [
+          "accounts"
+        ],
+        "properties": {
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChildAccountDTO"
+            },
+            "description": "The child's accounts"
+          }
+        }
+      },
+      "ChildAccountPropertiesDTO": {
+        "type": "object",
+        "required": [
+          "hasAccess",
+          "isAksjesparekonto",
+          "isAllowedInAvtaleGiro",
+          "isBalancePreferred",
+          "isBalanceUpdatedImmediatelyOnTransferTo",
+          "isBlocked",
+          "isBonusAccount",
+          "isCodebitorLoan",
+          "isDefaultPaymentAccount",
+          "isFlexiLoan",
+          "isHidden",
+          "isOwned",
+          "isPaymentFromEnabled",
+          "isSavingsAccount",
+          "isSecurityBalance",
+          "isTransferFromEnabled",
+          "isTransferToEnabled",
+          "isWithdrawalsAllowed",
+          "userHasRightOfAccess",
+          "userHasRightOfDisposal"
+        ],
+        "properties": {
+          "isOwned": {
+            "type": "boolean",
+            "description": "User owns the account"
+          },
+          "isHidden": {
+            "type": "boolean",
+            "description": "DEPRECATED - ALWAYS FALSE - The account should be hidden in user interfaces"
+          },
+          "hasAccess": {
+            "type": "boolean",
+            "description": "The user has access to the account"
+          },
+          "isBlocked": {
+            "type": "boolean",
+            "description": "Access to the account has been blocked"
+          },
+          "isFlexiLoan": {
+            "type": "boolean",
+            "description": "The account is a flexiloan account"
+          },
+          "isBonusAccount": {
+            "type": "boolean",
+            "description": "DEPRECATED - ALWAYS FALSE - The account is a bonus account"
+          },
+          "isCodebitorLoan": {
+            "type": "boolean",
+            "description": "DEPRECATED - ALWAYS FALSE - The account is a codebitor loan"
+          },
+          "isSavingsAccount": {
+            "type": "boolean",
+            "description": "The account is a savings account"
+          },
+          "isAksjesparekonto": {
+            "type": "boolean",
+            "description": "The account is a share savings account"
+          },
+          "isSecurityBalance": {
+            "type": "boolean",
+            "description": "The account is a security balance"
+          },
+          "isBalancePreferred": {
+            "type": "boolean",
+            "description": "Balance is preferred to availableBalance"
+          },
+          "isTransferToEnabled": {
+            "type": "boolean",
+            "description": "Transfers to the account is enabled"
+          },
+          "isPaymentFromEnabled": {
+            "type": "boolean",
+            "description": "Payments from the account is enabled"
+          },
+          "isWithdrawalsAllowed": {
+            "type": "boolean",
+            "description": "DEPRECATED - ALWAYS TRUE - Withdrawals from the account are allowed"
+          },
+          "userHasRightOfAccess": {
+            "type": "boolean",
+            "description": "User has right of access to the"
+          },
+          "isAllowedInAvtaleGiro": {
+            "type": "boolean",
+            "description": "Is allowed as debit account in AvtaleGiro agreements"
+          },
+          "isTransferFromEnabled": {
+            "type": "boolean",
+            "description": "Transfers from the account is enabled"
+          },
+          "userHasRightOfDisposal": {
+            "type": "boolean",
+            "description": "User has right of disposable for the account"
+          },
+          "isDefaultPaymentAccount": {
+            "type": "boolean",
+            "description": "The account is the users preferred default payment account"
+          },
+          "isBalanceUpdatedImmediatelyOnTransferTo": {
+            "type": "boolean",
+            "description": "If true, the account balance is updated immediately when transferring money to the account. If false, the balance will normally be updated within a few hours or days depending on the account type"
+          }
+        },
+        "description": "The properties of the account"
+      }
+    }
+  }
+}

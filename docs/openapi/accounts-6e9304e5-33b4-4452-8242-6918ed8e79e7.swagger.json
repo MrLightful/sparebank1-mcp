@@ -1,0 +1,413 @@
+{
+  "paths": {
+    "/accounts": {
+      "get": {
+        "tags": [
+          "/accounts"
+        ],
+        "summary": "List the caller's accounts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.sparebank1.v1+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountListDTO"
+                }
+              },
+              "application/vnd.sparebank1.v4+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountListDTO"
+                }
+              },
+              "application/vnd.sparebank1.v5+json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountListDTO"
+                }
+              }
+            },
+            "description": "Successfully retrieved accounts"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "includeNokAccounts",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            },
+            "description": "Specify whether the response should contain NOK accounts"
+          },
+          {
+            "in": "query",
+            "name": "includeCurrencyAccounts",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            },
+            "description": "Specify whether the response should contain currency accounts"
+          },
+          {
+            "in": "query",
+            "name": "includeBsuAccounts",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            },
+            "description": "Specify whether the response should contain BSU accounts"
+          },
+          {
+            "in": "query",
+            "name": "includeCreditCardAccounts",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "Specify whether the response should contain credit card accounts. Always excluded for application users. If the credit cards cannot be fetched, they are left out of the response instead of failing the request."
+          },
+          {
+            "in": "query",
+            "name": "includeAskAccounts",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "Specify whether the response should contain ASK accounts (aksjesparekonto)"
+          },
+          {
+            "in": "query",
+            "name": "includePensionAccounts",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "Specify whether the response should contain pension agreements"
+          }
+        ],
+        "description": "Lists deposit accounts the caller owns or has a role on, optionally together with credit cards and pension agreements. Credit cards and pension agreements are returned in the same AccountDTO format, but their key cannot be used with the other /accounts endpoints.",
+        "operationId": "getAccounts"
+      }
+    }
+  },
+  "openapi": "3.0.1",
+  "components": {
+    "schemas": {
+      "AccountDTO": {
+        "type": "object",
+        "required": [
+          "accountNumber",
+          "accountProperties",
+          "availableBalance",
+          "balance",
+          "currencyCode",
+          "iban",
+          "key",
+          "name",
+          "productType",
+          "type"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "example": "QeDJBRXWQaY8BkaSjgXT",
+            "description": "The key of the account. Used for further requests towards the account API. For credit cards this is the card id, and for pension agreements the policy number. These keys cannot be used with the other /accounts endpoints."
+          },
+          "iban": {
+            "type": "string",
+            "example": "NO4532091055340",
+            "description": "Account IBAN. Empty string for credit card and pension accounts."
+          },
+          "name": {
+            "type": "string",
+            "example": "My account",
+            "description": "The name of the account. Uses the users preferred name if it exists, falls back to system name if not. For credit cards this is the masked card number, and for pension agreements the agreement name."
+          },
+          "type": {
+            "enum": [
+              "BSU",
+              "ELS",
+              "IFRS",
+              "PENSION",
+              "SAVEAGREE",
+              "SAVING",
+              "STOCKSAVING",
+              "TAXWITHDRAW",
+              "UNKNOWN",
+              "USER",
+              "YEARINTBONUS",
+              "CREDITCARD"
+            ],
+            "type": "string",
+            "example": "USER",
+            "description": "The account type. Possible values:\n        - USER: Local currency deposit user account, including flexi loan accounts (see isFlexiLoan)\n        - SAVING: Local currency deposit saving account\n        - BSU: Local currency deposit BSU account\n        - ELS: Currency deposit loan account\n        - IFRS: Local currency IFRS account\n        - PENSION: Pension account\n        - SAVEAGREE: Local currency savings agreement account\n        - STOCKSAVING: Share savings account (aksjesparekonto)\n        - TAXWITHDRAW: Local currency tax withdrawal account\n        - YEARINTBONUS: Local currency deposit yearly interest bonus account\n        - CREDITCARD: Credit card\n        - UNKNOWN: Unknown host value\n    "
+          },
+          "owner": {
+            "$ref": "#/components/schemas/CustomerDTO"
+          },
+          "balance": {
+            "type": "number",
+            "example": 123.45,
+            "description": "The booked balance of the account, in the monetary unit represented by the currency code. The format is the monetary unit followed by . and two digits of cent. The value of cent in this context is one hundredth of the monetary unit. 12.67 in NOK would equal 12 kroners and 67 ore. For pension accounts this is the market value of the agreement."
+          },
+          "obsCodes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "deprecated": true,
+              "description": "DEPRECATED - ALWAYS NULL - List of OBS codes for the account"
+            },
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS NULL - List of OBS codes for the account"
+          },
+          "productId": {
+            "type": "string",
+            "example": "60040600",
+            "description": "The product id. Not present for credit card and pension accounts."
+          },
+          "description": {
+            "type": "string",
+            "example": "BRUKSKONTO",
+            "description": "A description of the account. For credit cards this is the card product name. Not present for pension accounts."
+          },
+          "productType": {
+            "enum": [
+              "LOCDEPOSIT",
+              "CURDEPOSIT",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "example": "LOCDEPOSIT",
+            "description": "The product code for the account. Possible values:\n        - LOCDEPOSIT: Local currency deposit.\n        - CURDEPOSIT: Currency deposit.\n        - UNKNOWN: Unknown host value, and for credit card and pension accounts.\n    "
+          },
+          "currencyCode": {
+            "type": "string",
+            "example": "NOK",
+            "description": "The three letter currency code"
+          },
+          "accountNumber": {
+            "type": "string",
+            "example": "11111111111",
+            "description": "The unformatted account number, 11 digits for deposit accounts. For credit cards this is the card account number (prefixed with K), and for pension agreements the policy number prefixed with P."
+          },
+          "descriptionCode": {
+            "type": "string",
+            "example": "L",
+            "description": "The description code for the account type"
+          },
+          "availableBalance": {
+            "type": "number",
+            "example": 123.45,
+            "description": "The available balance of the account, in the monetary unit represented by the currency code. The format is the monetary unit followed by . and two digits of cent. The value of cent in this context is one hundredth of the monetary unit. 12.67 in NOK would equal 12 kroners and 67 ore. For credit cards this equals balance, and for pension accounts it is always 0.00."
+          },
+          "accountProperties": {
+            "$ref": "#/components/schemas/AccountPropertiesDTO"
+          },
+          "creditCardAccountID": {
+            "type": "string",
+            "example": "103414520",
+            "description": "ID of the account (AccountId from the backend system KKINT). Present for all credit card accounts. Not present for any other accounts."
+          },
+          "creditCardCreditLimit": {
+            "type": "number",
+            "example": 123.45,
+            "description": "The granted credit limit of the card. Present for all credit card accounts. Not present for any other accounts. In the monetary unit represented by the currency code. The format is the monetary unit followed by . and two digits of cent. The value of cent in this context is one hundredth of the monetary unit. 12.67 in NOK would equal 12 kroners and 67 ore"
+          }
+        },
+        "description": "The user's accounts"
+      },
+      "CustomerDTO": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "age": {
+            "type": "integer",
+            "format": "int32",
+            "example": 28,
+            "description": "The customer's age. Only present when the owner is identified by a national identity number"
+          },
+          "name": {
+            "type": "string",
+            "example": "Kari Nordmann",
+            "description": "The customer's full name, i.e. first name and last name separated by a space"
+          },
+          "type": {
+            "enum": [
+              "personal",
+              "self_employed",
+              "corporate"
+            ],
+            "type": "string",
+            "example": "personal",
+            "description": "The type of customer"
+          },
+          "ssnKey": {
+            "type": "string",
+            "example": "gEKOMXLWjmsRvoc1_cmGyRzTBJUM1Pj1N1rxBVxgTTExS3EfJSbyZ1v3Dm8D5OM2vONpyAHjkgBLO9LdGVlvxm1",
+            "description": "The customer's social security number encrypted. A different value will be generated for each call. Only present when the owner is identified by a national identity number"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Nordmann",
+            "description": "The customer's last name. For corporate customers this is the company name"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Kari",
+            "description": "The customer's first name"
+          },
+          "customerKey": {
+            "type": "string",
+            "example": "7W0xVI9k",
+            "description": "The customer's key. Only present when the owner is identified by a national identity number"
+          },
+          "organisationNumber": {
+            "type": "string",
+            "example": "123456789",
+            "description": "The customer's 9 digit organisation number. Only present when the owner is identified by an organisation number"
+          }
+        },
+        "description": "The owner of the account. Not present for credit card and pension accounts."
+      },
+      "AccountListDTO": {
+        "type": "object",
+        "required": [
+          "accounts",
+          "errors"
+        ],
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "deprecated": true,
+              "description": "Deprecated, is always empty"
+            },
+            "deprecated": true,
+            "description": "Deprecated, is always empty"
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccountDTO"
+            },
+            "description": "The user's accounts"
+          }
+        }
+      },
+      "AccountPropertiesDTO": {
+        "type": "object",
+        "required": [
+          "hasAccess",
+          "isAksjesparekonto",
+          "isAllowedInAvtaleGiro",
+          "isBalancePreferred",
+          "isBalanceUpdatedImmediatelyOnTransferTo",
+          "isBlocked",
+          "isBonusAccount",
+          "isCodebitorLoan",
+          "isDefaultPaymentAccount",
+          "isFlexiLoan",
+          "isHidden",
+          "isOwned",
+          "isPaymentFromEnabled",
+          "isSavingsAccount",
+          "isSecurityBalance",
+          "isTransferFromEnabled",
+          "isTransferToEnabled",
+          "isWithdrawalsAllowed",
+          "userHasRightOfAccess",
+          "userHasRightOfDisposal"
+        ],
+        "properties": {
+          "isOwned": {
+            "type": "boolean",
+            "description": "The user owns the account. At most one of isOwned, userHasRightOfDisposal and userHasRightOfAccess is true"
+          },
+          "isHidden": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS FALSE - The account should be hidden in user interfaces"
+          },
+          "hasAccess": {
+            "type": "boolean",
+            "description": "The user has access to the account. Always true, except for pension accounts"
+          },
+          "isBlocked": {
+            "type": "boolean",
+            "description": "Access to the account has been blocked"
+          },
+          "isFlexiLoan": {
+            "type": "boolean",
+            "description": "The account is a flexiloan account"
+          },
+          "isBonusAccount": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS FALSE - The account is a bonus account"
+          },
+          "isCodebitorLoan": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS FALSE - The account is a codebitor loan"
+          },
+          "isSavingsAccount": {
+            "type": "boolean",
+            "description": "The account is a savings account"
+          },
+          "isAksjesparekonto": {
+            "type": "boolean",
+            "description": "The account is a share savings account"
+          },
+          "isSecurityBalance": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "DEPRECATED - ALWAYS FALSE - The account is a security balance"
+          },
+          "isBalancePreferred": {
+            "type": "boolean",
+            "description": "Balance is preferred to availableBalance"
+          },
+          "isTransferToEnabled": {
+            "type": "boolean",
+            "description": "Transfers to the account is enabled"
+          },
+          "isPaymentFromEnabled": {
+            "type": "boolean",
+            "description": "Payments from the account is enabled"
+          },
+          "isWithdrawalsAllowed": {
+            "type": "boolean",
+            "description": "Withdrawals from the account are allowed. Always true, except for pension accounts"
+          },
+          "userHasRightOfAccess": {
+            "type": "boolean",
+            "description": "The user has right of access (read only) to the account, without owning it or having right of disposal. At most one of isOwned, userHasRightOfDisposal and userHasRightOfAccess is true"
+          },
+          "isAllowedInAvtaleGiro": {
+            "type": "boolean",
+            "description": "Is allowed as debit account in AvtaleGiro agreements"
+          },
+          "isTransferFromEnabled": {
+            "type": "boolean",
+            "description": "Transfers from the account is enabled"
+          },
+          "userHasRightOfDisposal": {
+            "type": "boolean",
+            "description": "The user has right of disposal for the account, without owning it. At most one of isOwned, userHasRightOfDisposal and userHasRightOfAccess is true"
+          },
+          "isDefaultPaymentAccount": {
+            "type": "boolean",
+            "description": "The account is the users preferred default payment account"
+          },
+          "isBalanceUpdatedImmediatelyOnTransferTo": {
+            "type": "boolean",
+            "description": "If true, the account balance is updated immediately when transferring money to the account. If false, the balance will normally be updated within a few hours or days depending on the account type"
+          }
+        },
+        "description": "The properties of the account"
+      }
+    }
+  }
+}
