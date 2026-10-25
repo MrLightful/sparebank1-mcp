@@ -1,5 +1,9 @@
 # SpareBank 1 MCP
 
+[![npm version](https://img.shields.io/npm/v/sparebank1-mcp)](https://www.npmjs.com/package/sparebank1-mcp)
+[![CI](https://github.com/MrLightful/sparebank1-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/MrLightful/sparebank1-mcp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 > [!WARNING]
 > Independent project, not affiliated with, endorsed by, or certified by SpareBank 1.
 
